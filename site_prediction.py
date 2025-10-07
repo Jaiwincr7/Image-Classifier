@@ -16,10 +16,13 @@ MODEL_URL = "https://drive.google.com/uc?id=10Se1OUFJKhbT2U11kgU-rx-NAAeFVmp0"
 # ----------------------------------------------------
 
 def download_cnn_model():
-    """Download the CNN model from Google Drive if it doesn't exist."""
     if not os.path.exists(MODEL_PATH):
         st.info("Downloading CNN model...")
-        gdown.download(MODEL_URL, MODEL_PATH, quiet=False, fuzzy=True)
+        gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
+        if os.path.exists(MODEL_PATH):
+            st.success(f"Model downloaded: {MODEL_PATH}, size: {os.path.getsize(MODEL_PATH)} bytes")
+        else:
+            st.error("Failed to download the model.")
 
 def load_cifar_model():
     download_cnn_model()
@@ -124,6 +127,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
