@@ -19,7 +19,7 @@ def download_cnn_model():
     """Download the CNN model from Google Drive if it doesn't exist."""
     if not os.path.exists(MODEL_PATH):
         st.info("Downloading CNN model...")
-        gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
+        gdown.download(MODEL_URL, MODEL_PATH, quiet=False, fuzzy=True)
 
 def load_cifar_model():
     download_cnn_model()
@@ -124,4 +124,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
