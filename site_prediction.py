@@ -10,7 +10,7 @@ from PIL import Image
 import gdown
 
 # ---------------------- CONFIG ----------------------
-MODEL_PATH = "cnn_model.h5"
+MODEL_PATH = "path/to/cnn_model.h5"
 MODEL_URL = "https://drive.google.com/file/d/10Se1OUFJKhbT2U11kgU-rx-NAAeFVmp0/view?usp=drive_link"  # Replace with your direct download link
 # ----------------------------------------------------
 
@@ -125,3 +125,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
