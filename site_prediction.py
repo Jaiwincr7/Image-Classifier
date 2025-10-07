@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import cv2
 import pandas as pd
@@ -6,16 +7,29 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing import image as keras_image
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input, decode_predictions
 from PIL import Image
+import gdown
+
+# ---------------------- CONFIG ----------------------
+MODEL_PATH = "cnn_model.h5"
+MODEL_URL = "YOUR_GOOGLE_DRIVE_DIRECT_LINK"  # Replace with your direct download link
+# ----------------------------------------------------
+
+def download_cnn_model():
+    """Download the CNN model from Google Drive if it doesn't exist."""
+    if not os.path.exists(MODEL_PATH):
+        st.info("Downloading CNN model...")
+        gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
 
 def load_cifar_model():
-    cnn = tf.keras.models.load_model("cnn_model.h5")
+    download_cnn_model()
+    cnn = tf.keras.models.load_model(MODEL_PATH)
     return cnn
 
 def load_mobilenet():
     model = MobileNetV2(weights='imagenet')
     return model
 
-# different preprocessing method for different models
+# ---------------------- PREPROCESSING ----------------------
 def preprocess_cifar(img_file):
     img = np.array(img_file)
     img = cv2.resize(img, (32, 32))
@@ -31,18 +45,19 @@ def preprocess_mobilenet(img_file):
     img = preprocess_input(img)
     return img
 
+# ---------------------- CLASSIFICATION ----------------------
 def classify(cnn, mobilenet, img_file):
     try:
-        # cnn prediction
+        # CNN prediction
         img_cifar = preprocess_cifar(img_file)
         result_cnn = cnn.predict(img_cifar)
 
-        # mobilenet prediction
+        # MobileNet prediction
         img_mobilenet = preprocess_mobilenet(img_file)
         result_mobilenet = mobilenet.predict(img_mobilenet)
         decoded_predictions = decode_predictions(result_mobilenet, top=3)[0]
 
-        # class in the cifar based dataset
+        # CIFAR-10 class names
         class_names = [
             "airplane", "automobile", "bird", "cat", "deer",
             "dog", "frog", "horse", "ship", "truck"
@@ -57,25 +72,26 @@ def classify(cnn, mobilenet, img_file):
         st.error(f"Error Classifying the image: {str(e)}")
         return None, None
 
+# ---------------------- STREAMLIT APP ----------------------
 def main():
     st.set_page_config(page_title="Image Classifier", layout='wide')
     st.title('🧠 Image Classifier (CIFAR-10 + MobileNetV2)')
 
+    # Display model info
     data = {
         'Model': ['Custom CNN', 'MobileNetV2'],
         'Definitions': [
-            'A Convolutional Neural Network (CNN) is a deep learning architecture that automatically learns spatial hierarchies of features from images. This model was trained from scratch on the CIFAR-10 dataset to classify 10 categories such as airplanes, dogs, and ships.',
-            'MobileNetV2 is a pre-trained convolutional neural network designed for high accuracy with minimal computation. It uses depthwise separable convolutions and is optimized for mobile and embedded vision applications.'
+            'A CNN trained from scratch on the CIFAR-10 dataset (10 classes).',
+            'MobileNetV2 is a pre-trained ImageNet model optimized for mobile/embedded use.'
         ],
         'Working': [
-            'Our CNN extracts features using multiple convolutional and pooling layers, then classifies images through dense layers. It learns all parameters directly from the CIFAR-10 dataset during training.',
-            'MobileNetV2 uses pre-trained ImageNet weights and relies on inverted residual blocks with linear bottlenecks to achieve efficient inference while maintaining accuracy. It’s used here to compare transfer learning performance with the custom CNN.'
+            'CNN extracts features using convolutional layers and classifies images with dense layers.',
+            'MobileNetV2 uses pre-trained weights with inverted residual blocks for efficient inference.'
         ]
     }
     df = pd.DataFrame(data)
     st.table(df)
-
-    st.write('Upload an image to classify it using both a custom CNN and MobileNetV2.')
+    st.write('Upload an image to classify it using both models.')
 
     @st.cache_resource
     def load_models():
@@ -84,7 +100,6 @@ def main():
     cnn_model, mobilenet_model = load_models()
 
     uploaded_file = st.file_uploader("Choose an image...", type=['jpg', 'png'])
-
     if uploaded_file is not None:
         col1, col2 = st.columns([2, 3])
 
