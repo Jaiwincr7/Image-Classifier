@@ -1,6 +1,6 @@
 import os
 import streamlit as st
-import cv2
+# import cv2
 import pandas as pd
 import numpy as np
 import tensorflow as tf
@@ -10,7 +10,7 @@ from PIL import Image
 import gdown
 
 # ---------------------- CONFIG ----------------------
-MODEL_PATH = "path/to/cnn_model.h5"
+MODEL_PATH = "cnn_model.h5"
 MODEL_URL = "https://drive.google.com/file/d/10Se1OUFJKhbT2U11kgU-rx-NAAeFVmp0/view?usp=drive_link"  # Replace with your direct download link
 # ----------------------------------------------------
 
@@ -31,15 +31,13 @@ def load_mobilenet():
 
 # ---------------------- PREPROCESSING ----------------------
 def preprocess_cifar(img_file):
-    img = np.array(img_file)
-    img = cv2.resize(img, (32, 32))
+    img = img_file.resize((32, 32))  # Resize using PIL
     img = keras_image.img_to_array(img)
     img = np.expand_dims(img, axis=0) / 255.0
     return img
 
 def preprocess_mobilenet(img_file):
-    img = np.array(img_file)
-    img = cv2.resize(img, (224, 224))
+    img = img_file.resize((224, 224))
     img = keras_image.img_to_array(img)
     img = np.expand_dims(img, axis=0)
     img = preprocess_input(img)
@@ -125,4 +123,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
