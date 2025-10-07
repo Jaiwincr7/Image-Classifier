@@ -11,7 +11,8 @@ import gdown
 
 # ---------------------- CONFIG ----------------------
 MODEL_PATH = "cnn_model.h5"
-MODEL_URL = "https://drive.google.com/file/d/10Se1OUFJKhbT2U11kgU-rx-NAAeFVmp0/view?usp=drive_link"  # Replace with your direct download link
+MODEL_URL = "https://drive.google.com/uc?id=10Se1OUFJKhbT2U11kgU-rx-NAAeFVmp0"
+  # Replace with your direct download link
 # ----------------------------------------------------
 
 def download_cnn_model():
@@ -123,3 +124,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
