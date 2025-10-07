@@ -1,5 +1,5 @@
 streamlit>=1.30
-tensorflow>=2.23
+tensorflow==2.20.0rc0  # or remove the version pin
 numpy>=1.26.2
 Pillow
 opencv-python
